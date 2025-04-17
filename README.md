@@ -33,6 +33,12 @@ This project aims to develop a comprehensive **Diabetes Management System** that
   
 - **Diabetica7B**  
   Specialized LLM for diabetes-focused report generation and interaction.
+
+- **Front end**
+Next.js and React.js
+
+- **Backend **
+Node.js and Express.js
   
 - **Reinforcement Learning**  
   Optimizes chatbot responses based on real-time user feedback.
@@ -60,23 +66,20 @@ This project aims to develop a comprehensive **Diabetes Management System** that
 ### Prerequisites
 - Smartwatch + CGM (e.g., Dexcom, Medtronic)
 - Smartphone or tablet for chatbot access
-- Python environment with:
-  - TensorFlow or PyTorch
-  - NLP Libraries (e.g., NLTK, spaCy)
+- Node.js and Next.js install globally
 
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/diabetes-management-system.git
+git clone (https://github.com/sp7179/Diagnosis.git)
 
 # Navigate into the project directory
-cd diabetes-management-system
+cd Diagnosis
 
-# Install required dependencies
-pip install -r requirements.txt
-
-# Run the application
-python app.py
+# Environment Setup
+npm install 
+npm run build
+npm run start
 ```
 
 ---
@@ -87,11 +90,6 @@ Fork the repository, create a feature branch, and submit a pull request describi
 
 ---
 
-## 📄 License
-This project is licensed under the **MIT License**.  
-See the [LICENSE](LICENSE) file for more details.
-
----
 
 ## 🙌 Acknowledgments
 - [ClinicalBERT](https://github.com/kexinhuang12345/clinicalBERT)
@@ -114,7 +112,7 @@ See the [LICENSE](LICENSE) file for more details.
 ## 👨‍💻 Team
 
 **Team Lead**  
-- Verma
+- Arpit Verma
 
 **Group Members**  
 - Shourish Paul  
