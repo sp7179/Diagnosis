@@ -35,10 +35,10 @@ This project aims to develop a comprehensive **Diabetes Management System** that
   Specialized LLM for diabetes-focused report generation and interaction.
 
 - **Front end**
-Next.js and React.js
+  Next.js and React.js
 
-- **Backend **
-Node.js and Express.js
+- **Backend**
+  Node.js and Express.js
   
 - **Reinforcement Learning**  
   Optimizes chatbot responses based on real-time user feedback.
@@ -121,4 +121,3 @@ Fork the repository, create a feature branch, and submit a pull request describi
 
 ---
 
-Let me know if you'd like this formatted as a downloadable file or need help deploying this to GitHub!
