@@ -213,8 +213,8 @@ export default function ChatbotPage() {
       data: [
         { name: "Test A", value: 400, target: 450, previous: 350 },
         { name: "Test B", value: 300, target: 350, previous: 280 },
-        { name: "Test C", value: 600, target: 550, previous: 500 },
-        { name: "Test D", value: 800, target: 750, previous: 700 },
+        { name: "Test C", value: 150, target: 255, previous: 257 },
+        { name: "Test D", value: 120, target: 75, previous: 60 },
         { name: "Test E", value: 500, target: 600, previous: 450 },
       ],
     }

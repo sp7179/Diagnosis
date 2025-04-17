@@ -280,10 +280,12 @@ const ChartDisplay = ({
   return (
     <div className="chart-panel">
       <div className="chart-header">
+        { !showChart &&
         <h2 className="chart-title">
           <span className="chart-icon">📊</span>
           Data Visualization
         </h2>
+}
         {showChart && (
           <div className="chart-tabs">
             <button
