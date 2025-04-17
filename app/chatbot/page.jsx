@@ -8,8 +8,24 @@ import Link from "next/link"
 import ChatMessage from "../../components/ChatMessage"
 import ChartDisplay from "../../components/ChartDisplay"
 import "../../styles/chatbot.css"
-
+import { v4 as uuidv4 } from "uuid" // Install with: npm install uuid
+const modelUrl = process.env.NEXT_PUBLIC_MODEL_URL ;
 export default function ChatbotPage() {
+  // 1. Initialize session ID from localStorage or generate a new one
+  const [sessionId, setSessionId] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("session_id") || uuidv4()
+    }
+    return uuidv4()
+  })
+
+  // 2. Store session ID in localStorage if it changes
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionId) {
+      localStorage.setItem("session_id", sessionId)
+    }
+  }, [sessionId])
+
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -48,7 +64,7 @@ export default function ChatbotPage() {
           {
             id: "welcome",
             content:
-              "👋 Hi there! I'm your health data visualization assistant. I can help you visualize your health metrics and provide insights. Try asking me something like 'Show me my glucose levels for the past week' or 'Create a chart of my daily activity'.",
+              "👋 Hi there! I'm your health assistant. I can help you take care of your health and provide insights. Try asking me something like 'Show me my glucose levels for the past week' or 'Create a chart of my daily activity'.",
             role: "assistant",
           },
         ])
@@ -88,13 +104,17 @@ export default function ChatbotPage() {
         },
       ])
 
-      const response = await fetch("/api/chat", {
+      const response = await fetch(`${modelUrl}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage],
+          user_name: "Samantha",
+          diabetic_type: "Pre-diabetic",
+          session_id: sessionId, // Use the sessionId from state
+          user_input: input,
+          // ...add any other health data fields if needed...
         }),
       })
 
@@ -102,9 +122,16 @@ export default function ChatbotPage() {
         throw new Error(`Server responded with ${response.status}: ${response.statusText}`)
       }
 
-      // Get the response as text instead of trying to stream it
-      const responseText = await response.text()
-      console.log("API Response:", responseText)
+      // Parse JSON response
+      const data = await response.json()
+      console.log("API Response:", data)
+
+      // 3. Update session ID if backend returns a new one
+      if (data.session_id && data.session_id !== sessionId) {
+        setSessionId(data.session_id)
+      }
+
+      const responseText = data.response
 
       // Update the assistant message with the full response
       setMessages((prev) => {
