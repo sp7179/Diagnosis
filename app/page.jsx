@@ -108,7 +108,7 @@ export default function LandingPage() {
     <div className="landing-container">
       {/* Hero Section */}
       <header className="project-title-header">
-        <h1 className="project-title">Diabetica</h1>
+        <h1 className="project-title">DIABETICA</h1>
       </header>
       <section className="hero-section">
         <div className="hero-content">
