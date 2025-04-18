@@ -9,6 +9,8 @@ import ChatMessage from "../../components/ChatMessage"
 import ChartDisplay from "../../components/ChartDisplay"
 import "../../styles/chatbot.css"
 import { v4 as uuidv4 } from "uuid" // Install with: npm install uuid
+import { io } from "socket.io-client"
+
 const modelUrl = process.env.NEXT_PUBLIC_MODEL_URL ;
 export default function ChatbotPage() {
   // 1. Initialize session ID from localStorage or generate a new one
@@ -47,6 +49,7 @@ export default function ChatbotPage() {
 
   const messagesEndRef = useRef(null)
   const canvasRef = useRef(null)
+  const socketRef = useRef(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -74,162 +77,43 @@ export default function ChatbotPage() {
     return () => clearTimeout(timer)
   }, [messages.length])
 
+  useEffect(() => {
+    // Connect to backend Socket.IO server
+    socketRef.current = io("http://localhost:3000");
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket.io server");
+    });
+
+    socketRef.current.on("botMessage", (msg) => {
+      // Handle incoming messages
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now().toString(), content: msg, role: "assistant" }
+      ]);
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
+
   const handleInputChange = (e) => {
     setInput(e.target.value)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!input.trim()) return
-
-    // Add user message
-    const userMessage = {
-      id: Date.now().toString(),
-      content: input,
-      role: "user",
+  const sendMessage = (msg) => {
+    if (socketRef.current) {
+      socketRef.current.emit("userMessage", msg);
     }
+  };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setIsLoading(true)
-
-    try {
-      // Add a temporary assistant message that will be updated as the response streams in
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: "assistant-streaming",
-          content: "",
-          role: "assistant",
-        },
-      ])
-
-      const response = await fetch(`${modelUrl}/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_name: "Samantha",
-          diabetic_type: "Pre-diabetic",
-          session_id: sessionId, // Use the sessionId from state
-          user_input: input,
-          // ...add any other health data fields if needed...
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}: ${response.statusText}`)
-      }
-
-      // Parse JSON response
-      const data = await response.json()
-      console.log("API Response:", data)
-
-      // 3. Update session ID if backend returns a new one
-      if (data.session_id && data.session_id !== sessionId) {
-        setSessionId(data.session_id)
-      }
-
-      const responseText = data.response
-
-      // Update the assistant message with the full response
-      setMessages((prev) => {
-        const newMessages = [...prev]
-        const assistantMsgIndex = newMessages.findIndex((m) => m.id === "assistant-streaming")
-
-        if (assistantMsgIndex >= 0) {
-          // Clean the response text to remove any streaming artifacts
-          let content = responseText
-
-          // Check if the message contains chart data
-          if (content.includes("CHART_DATA:")) {
-            try {
-              console.log("Found chart data in response")
-              const chartDataStr = content.split("CHART_DATA:")[1].split("END_CHART_DATA")[0]
-              console.log("Chart data string:", chartDataStr)
-              const chartData = JSON.parse(chartDataStr)
-              console.log("Parsed chart data:", chartData)
-              setChartData(chartData)
-              setActiveChart(chartData.type || "bar")
-              setShowChart(true)
-
-              // Show only the text part of the response
-              content = content.split("CHART_DATA:")[0]
-
-              // Trigger confetti effect when new chart is displayed
-              setTimeout(() => {
-                const canvas = document.createElement("canvas")
-                canvas.style.position = "fixed"
-                canvas.style.inset = "0"
-                canvas.style.width = "100vw"
-                canvas.style.height = "100vh"
-                canvas.style.pointerEvents = "none"
-                canvas.style.zIndex = "100"
-                document.body.appendChild(canvas)
-
-                const myConfetti = confetti.create(canvas, {
-                  resize: true,
-                  useWorker: true,
-                })
-
-                myConfetti({
-                  particleCount: 100,
-                  spread: 70,
-                  origin: { y: 0.6 },
-                  colors: ["#1E90FF", "#00BFFF", "#87CEFA", "#4169E1", "#6495ED", "#4682B4"],
-                })
-
-                setTimeout(() => {
-                  document.body.removeChild(canvas)
-                }, 3000)
-              }, 300)
-            } catch (error) {
-              console.error("Failed to parse chart data:", error)
-              console.error(
-                "Raw chart data string:",
-                content.includes("CHART_DATA:") ? content.split("CHART_DATA:")[1] : "No CHART_DATA found",
-              )
-            }
-          } else {
-            console.log("No chart data found in response")
-          }
-
-          newMessages[assistantMsgIndex] = {
-            id: `assistant-${Date.now()}`,
-            content: content,
-            role: "assistant",
-          }
-        }
-
-        return newMessages
-      })
-    } catch (error) {
-      console.error("Error:", error)
-      setMessages((prev) => {
-        const newMessages = [...prev]
-        const assistantMsgIndex = newMessages.findIndex((m) => m.id === "assistant-streaming")
-
-        if (assistantMsgIndex >= 0) {
-          newMessages[assistantMsgIndex] = {
-            id: `assistant-error-${Date.now()}`,
-            content: "Sorry, there was an error processing your request. Please try again.",
-            role: "assistant",
-          }
-        } else {
-          newMessages.push({
-            id: `assistant-error-${Date.now()}`,
-            content: "Sorry, there was an error processing your request. Please try again.",
-            role: "assistant",
-          })
-        }
-
-        return newMessages
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    sendMessage(input);
+    setInput("");
+  };
 
   // Function to manually trigger chart display for testing
   const triggerTestChart = () => {

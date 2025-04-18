@@ -1,12 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import "../styles/landing.css"
+import { v4 as uuidv4 } from "uuid"
 
 export default function LandingPage() {
   const [activeTimelineItem, setActiveTimelineItem] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [notifications, setNotifications] = useState([]) // <-- Notification state
+
+  const [sessionId, setSessionId] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("session_id") || uuidv4()
+    }
+    return uuidv4()
+  })
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionId) {
+      localStorage.setItem("session_id", sessionId)
+    }
+  }, [sessionId])
 
   const timelineItems = [
     {
@@ -87,8 +103,68 @@ export default function LandingPage() {
     },
   ]
 
+  useEffect(() => {
+    const pollInterval = setInterval(async () => {
+      if (!isLoading) {
+        const response = await fetch("http://localhost:8000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId,
+            userInput: "", // Empty input to just check for triggers
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.autoTrigger) {
+            setNotifications((prev) => [
+              ...prev,
+              {
+                id: uuidv4(),
+                message: data.autoTrigger,
+                time: new Date().toLocaleTimeString(),
+              },
+            ]);
+          }
+        }
+      }
+    }, 2 * 60 * 1000); // 2 minutes
+  
+    return () => clearInterval(pollInterval);
+  }, [sessionId, isLoading]);
+
   return (
     <div className="landing-container">
+      {/* Notification Panel */}
+      {notifications.length > 0 && (
+        <div className="notification-panel" style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 2000,
+          background: "#1976d2",
+          color: "#fff",
+          padding: "12px 24px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px"
+        }}>
+          {notifications.map((notif) => (
+            <div key={notif.id} style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px"
+            }}>
+              <span style={{ fontSize: "1.5rem" }}>🍽️</span>
+              <span>{notif.message}</span>
+              <span style={{ marginLeft: "auto", fontSize: "0.9rem", opacity: 0.7 }}>{notif.time}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">

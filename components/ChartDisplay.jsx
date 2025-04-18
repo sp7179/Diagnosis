@@ -89,8 +89,8 @@ const ChartDisplay = ({
                 ))}
               </defs>
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} stroke="#8892B0" />
-              <XAxis dataKey="name" tick={{ fill: "#CCD6F6" }} />
-              <YAxis tick={{ fill: "#CCD6F6" }} />
+              <XAxis dataKey="name" tick={{ fill: "#CCD6F6" }} label={{ value: "Time", position: "insideBottom", fill: "#CCD6F6", offset: -5 }} />
+              <YAxis tick={{ fill: "#CCD6F6" }} label={{ value: "Glucose (mg/dL)", angle: -90, position: "insideLeft", fill: "#CCD6F6" }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ color: "#CCD6F6" }} />
               <Bar dataKey="value" animationDuration={1500} animationEasing="ease-in-out" isAnimationActive={true}>
@@ -128,8 +128,8 @@ const ChartDisplay = ({
                 ))}
               </defs>
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} stroke="#8892B0" />
-              <XAxis dataKey="name" tick={{ fill: "#CCD6F6" }} />
-              <YAxis tick={{ fill: "#CCD6F6" }} />
+              <XAxis dataKey="name" tick={{ fill: "#CCD6F6" }} label={{ value: "Time", position: "insideBottom", fill: "#CCD6F6", offset: -5 }} />
+              <YAxis tick={{ fill: "#CCD6F6" }} label={{ value: "Glucose (mg/dL)", angle: -90, position: "insideLeft", fill: "#CCD6F6" }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ color: "#CCD6F6" }} />
               <Line
@@ -205,8 +205,8 @@ const ChartDisplay = ({
                 ))}
               </defs>
               <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} stroke="#8892B0" />
-              <XAxis dataKey="name" tick={{ fill: "#CCD6F6" }} />
-              <YAxis tick={{ fill: "#CCD6F6" }} />
+              <XAxis dataKey="name" tick={{ fill: "#CCD6F6" }} label={{ value: "Time", position: "insideBottom", fill: "#CCD6F6", offset: -5 }} />
+              <YAxis tick={{ fill: "#CCD6F6" }} label={{ value: "Glucose (mg/dL)", angle: -90, position: "insideLeft", fill: "#CCD6F6" }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ color: "#CCD6F6" }} />
               <Area

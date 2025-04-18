@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Samantha Health Chat</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+    #chat { border:1px solid #ccc; padding:1em; height:400px; overflow-y:scroll; }
+    #input { width:100%; box-sizing:border-box; }
+  </style>
+</head>
+<body>
+  <h1>Samantha’s Health Assistant</h1>
+  <div id="chat"></div>
+  <input id="input" placeholder="Type a message…" autocomplete="off"/>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const chat   = document.getElementById('chat');
+    const input  = document.getElementById('input');
+
+    function addLine(who, text) {
+      const div = document.createElement('div');
+      div.textContent = who + ': ' + text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // DEBUG: connection events
+    socket.on('connect', () => {
+      console.log('⚡ connected as', socket.id);
+      addLine('System', 'Connected to server.');
+    });
+    socket.on('connect_error', e => console.error('socket error', e));
+
+    // render bot messages
+    socket.on('botMessage', msg => addLine('Assistant', msg));
+
+    // send user messages
+    input.addEventListener('keypress', e => {
+      if (e.key === 'Enter' && input.value.trim()) {
+        console.log('→ userMessage', input.value);
+        addLine('You', input.value);
+        socket.emit('userMessage', input.value);
+        input.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
