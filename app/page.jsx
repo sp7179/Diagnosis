@@ -3,10 +3,12 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import "../styles/landing.css"
 
 export default function LandingPage() {
   const [activeTimelineItem, setActiveTimelineItem] = useState(0)
+  const router = useRouter()
 
   const timelineItems = [
     {
@@ -14,30 +16,40 @@ export default function LandingPage() {
       title: "Smart Meal Suggestions",
       description: "AI-powered breakfast recommendations based on your glucose levels and daily activity.",
       icon: "🍳",
+      botMessage: "Good morning! Based on your glucose trends, would you like some healthy breakfast ideas to start your day?",
+      userMessage: "Suggest some healthy breakfast ideas to start my day.",
     },
     {
       time: "Midday",
       title: "Stress & Heart-Rate Alerts",
       description: "Real-time monitoring with gentle reminders to breathe when stress levels rise.",
       icon: "❤️",
+      botMessage: "I noticed your heart rate is a bit elevated. Would you like to try a quick breathing exercise to relax?",
+      userMessage: "Suggest a quick breathing exercise to relax.",
     },
     {
       time: "Afternoon",
       title: "Food Recognition with AI",
       description: "Snap a photo of your meal and get instant nutritional analysis and glucose impact.",
       icon: "📸",
+      botMessage: "Ready for lunch? Snap a photo of your meal and I'll analyze its nutrition for you!",
+      userMessage: "Analyze the nutrition of my lunch from a photo.",
     },
     {
       time: "Evening",
       title: "Real-time Family Check-in",
       description: "Share your health status with loved ones and healthcare providers.",
       icon: "👪",
+      botMessage: "Would you like to share your health summary with your family or doctor this evening?",
+      userMessage: "Share my health summary with my family or doctor.",
     },
     {
       time: "Night",
       title: "Personalized Nighttime Routine",
       description: "Wind down with custom recommendations for better sleep and glucose management.",
       icon: "🌙",
+      botMessage: "It's almost bedtime. Want some tips for a restful night and stable glucose levels?",
+      userMessage: "Give me tips for a restful night and stable glucose levels.",
     },
   ]
 
@@ -87,9 +99,17 @@ export default function LandingPage() {
     },
   ]
 
+  const handleYesClick = () => {
+    const userMessage = timelineItems[activeTimelineItem].userMessage
+    router.push(`/chatbot?input=${encodeURIComponent(userMessage)}`)
+  }
+
   return (
     <div className="landing-container">
       {/* Hero Section */}
+      <header className="project-title-header">
+        <h1 className="project-title">Diabetica</h1>
+      </header>
       <section className="hero-section">
         <div className="hero-content">
           <motion.h1
@@ -154,8 +174,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <motion.div
-            className="timeline-content"
+          <motion.div className="timeline-content"
             key={activeTimelineItem}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -166,10 +185,10 @@ export default function LandingPage() {
             <div className="chat-bubble">
               <div className="chat-message">
                 <span className="bot-icon">🤖</span>
-                <p>I noticed your glucose is trending up. Would you like some low-carb lunch options?</p>
+                <p>{timelineItems[activeTimelineItem].botMessage}</p>
               </div>
               <div className="chat-options">
-                <button className="chat-option">Yes, please!</button>
+                <button className="chat-option" onClick={handleYesClick}>Yes, please!</button>
                 <button className="chat-option">Not now</button>
               </div>
             </div>

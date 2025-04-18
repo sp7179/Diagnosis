@@ -25,6 +25,14 @@
   border-radius: 50%;
 }
 
+.avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+
 .user-avatar {
   background: linear-gradient(to right, #1e90ff, #00bfff);
 }

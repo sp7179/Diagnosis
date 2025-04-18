@@ -1,10 +1,42 @@
+/* Ensure chatbot container always has space at the bottom */
 .chatbot-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1rem 1rem 2.5rem 1rem; /* Add extra bottom padding */
+  box-sizing: border-box;
+  background: transparent;
+}
+
+/* Ensure main area grows but leaves space at the bottom */
+.chatbot-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  flex-grow: 1;
+  min-height: 0;
+  margin-bottom: 1.5rem; /* Add margin at the bottom */
+}
+
+@media (min-width: 768px) {
+  .chatbot-main {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* Prevent chart-panel from sticking to the bottom */
+.chart-panel {
+  margin-bottom: 1.5rem;
+}
+
+.chatbot-title-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 0.7rem;
 }
 
 .chatbot-header {

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Sector } from "recharts"
+import { useSearchParams } from "next/navigation"
 import confetti from "canvas-confetti"
 import Link from "next/link"
 import ChatMessage from "../../components/ChatMessage"
@@ -11,6 +12,9 @@ import "../../styles/chatbot.css"
 import { v4 as uuidv4 } from "uuid" // Install with: npm install uuid
 const modelUrl = process.env.NEXT_PUBLIC_MODEL_URL ;
 export default function ChatbotPage() {
+
+  const searchParams = useSearchParams()
+
   // 1. Initialize session ID from localStorage or generate a new one
   const [sessionId, setSessionId] = useState(() => {
     if (typeof window !== "undefined") {
@@ -18,16 +22,9 @@ export default function ChatbotPage() {
     }
     return uuidv4()
   })
-
-  // 2. Store session ID in localStorage if it changes
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionId) {
-      localStorage.setItem("session_id", sessionId)
-    }
-  }, [sessionId])
-
+  const initialInput = searchParams.get("input") || ""
   const [messages, setMessages] = useState([])
-  const [input, setInput] = useState("")
+  const [input, setInput] = useState(initialInput)
   const [isLoading, setIsLoading] = useState(false)
   const [showChart, setShowChart] = useState(false)
   const [activeChart, setActiveChart] = useState("bar")
@@ -51,6 +48,13 @@ export default function ChatbotPage() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
+    // 2. Store session ID in localStorage if it changes
+  useEffect(() => {
+      if (typeof window !== "undefined" && sessionId) {
+        localStorage.setItem("session_id", sessionId)
+      }
+    }, [sessionId])
+  
 
   useEffect(() => {
     scrollToBottom()
@@ -64,7 +68,7 @@ export default function ChatbotPage() {
           {
             id: "welcome",
             content:
-              "👋 Hi there! I'm your health assistant. I can help you take care of your health and provide insights. Try asking me something like 'Show me my glucose levels for the past week' or 'Create a chart of my daily activity'.",
+              "👋 Hi there! I help you monitor and analyze important health parameters like glucose levels, blood pressure, and more to support early detection and management of diabetes.",
             role: "assistant",
           },
         ])
@@ -236,13 +240,13 @@ export default function ChatbotPage() {
     // Create more interesting test data with multiple metrics
     const testChartData = {
       type: "bar",
-      title: "Test Chart Data",
+      title: "MediGraph Data",
       data: [
-        { name: "Test A", value: 400, target: 450, previous: 350 },
-        { name: "Test B", value: 300, target: 350, previous: 280 },
-        { name: "Test C", value: 150, target: 255, previous: 257 },
-        { name: "Test D", value: 120, target: 75, previous: 60 },
-        { name: "Test E", value: 500, target: 600, previous: 450 },
+        { name: "Oxygen level (SpO2)", value: 96, target: 98, previous: 94 },
+        { name: "Blood sugar (mg/dL)", value: 110, target: 100, previous: 125 },
+        { name: "Blood pressure (mmHg)", value: 130, target: 120, previous: 140 },
+        { name: "Heart rate (bpm)", value: 78, target: 72, previous: 85 },
+        { name: "Body temperature (°F)", value: 98.6, target: 98.6, previous: 99.2 },
       ],
     }
 
@@ -256,12 +260,12 @@ export default function ChatbotPage() {
       {
         id: `test-${Date.now()}`,
         content:
-          "Here's a test chart I've created for you! You can switch between different chart types to see the same data visualized in different ways.",
+          "Here's a MediGraph I've created for you! You can switch between different chart types to see the same data visualized in different ways.",
         role: "assistant",
       },
     ])
 
-    // Trigger confetti effect for the test chart
+    // Trigger confetti effect for the MediGraph
     setTimeout(() => {
       const canvas = document.createElement("canvas")
       canvas.style.position = "fixed"
@@ -340,13 +344,14 @@ export default function ChatbotPage() {
 
   // Sample questions for quick prompts
   const sampleQuestions = [
-    "Show me my glucose levels for the past week",
-    "Create a pie chart of my daily carb intake",
-    "Compare my activity levels this month vs last month",
+    "Analyze my hydration levels over the past week",
+    "Visualize my calorie burn from workouts this month",
+    "Track my heart rate variations during workouts",
     "Show me my sleep quality trends",
-    "Generate a chart of my medication adherence",
-  ]
-
+    "Generate a chart of my medication adherence"
+  ];
+  
+  
   const handleSampleQuestion = (question) => {
     setInput(question)
     // Focus on the input field
@@ -362,18 +367,27 @@ export default function ChatbotPage() {
   return (
     <div className="chatbot-container">
       <div className="chatbot-header">
-        <motion.h1
-          className="chatbot-title"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <span className="sparkle-icon">✨</span>
-          <span className="title-text">Health Data Visualization</span>
-        </motion.h1>
+      <motion.h1
+  className="chatbot-title"
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+>
+  <span className="chatbot-title-icon">
+    <img
+      src="/visual.png"
+      alt="Health Data Visualization"
+      className="chatbot-title-img"
+      width={36}
+      height={36}
+      style={{ verticalAlign: "middle", marginRight: "0.7rem" }}
+    />
+  </span>
+  <span className="title-text">Health Data Visualization</span>
+</motion.h1>
         <div className="header-actions">
           <button className="test-chart-button" onClick={triggerTestChart}>
-            Test Chart
+            MediGraph
           </button>
           <Link href="/" className="back-to-home">
             Back to Home

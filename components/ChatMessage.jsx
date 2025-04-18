@@ -9,13 +9,19 @@ const ChatMessage = ({ message }) => {
 
   return (
     <div className={`message-container ${message.role === "user" ? "user-message" : "assistant-message"}`}>
-      <div className={`avatar ${message.role === "user" ? "user-avatar" : "assistant-avatar"}`}>
-        {message.role === "user" ? "👤" : "🤖"}
-      </div>
-      <div className={`message-bubble ${message.role === "user" ? "user-bubble" : "assistant-bubble"}`}>
-        <div className="message-content">{content}</div>
-      </div>
-    </div>
+  <div className={`avatar ${message.role === "user" ? "user-avatar" : "assistant-avatar"}`}>
+    <img
+      src={message.role === "user" ? "/user.png" : "/bot.png"}
+      alt={message.role === "user" ? "User" : "Bot"}
+      className="avatar-img"
+      width={36}
+      height={36}
+    />
+  </div>
+  <div className={`message-bubble ${message.role === "user" ? "user-bubble" : "assistant-bubble"}`}>
+    <div className="message-content">{content}</div>
+  </div>
+</div>
   )
 }
 
