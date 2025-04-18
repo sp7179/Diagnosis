@@ -31,15 +31,6 @@ let askedBreakfast = false;
 let askedLunch     = false;
 let askedDinner    = false;
 
-// Example user report
-const userReportText = `
-Patient: Samantha
-Age: 45
-Diagnosis: Pre-diabetes, hypertension.
-Recent labs: Fasting glucose 98 mg/dL, HbA1c 6.0%.
-Medications: Metformin 500mg daily.
-Notes: Family history of diabetes. Needs to increase physical activity.
-`;
 
 class InMemoryHistory {
   constructor() { this.messages = []; }
@@ -62,8 +53,10 @@ Simulated smartwatch/health data:
 {simulated_data}
 
 Instructions:
-- Answer questions and give advice based on BOTH the clinical report and the latest simulated data.
-- If a value is missing or unknown, acknowledge it and offer general advice.
+- Answer questions on BOTH the clinical report and the latest simulated data in short.
+- Only give ADVICE if the user explicitly asks for it, OR if a recent health parameter (like glucose, heart rate, or blood pressure) is significantly higher than normal.
+- For meal notifications, you may ask about recent meals, but do not give advice unless the above conditions are met.
+- If a value is missing or unknown, acknowledge it and offer general advice only if asked.
 - Be supportive, clear, and use plain language.
 `;
 
@@ -95,7 +88,7 @@ async function checkMealTriggers(sessionId) {
     console.log('⏰ current time:', now);
     console.log('⏰ previous time:', previousTime);
     const resp = await chain.call({
-      user_report:    userReportText,
+      user_report:    simulated_data. userReportTexttText,
       simulated_data: formatSimulatedData(windowData),
       input:          'Ask the user What did you have for breakfast?',
       history:        getBySessionId(sessionId).messages
@@ -108,7 +101,7 @@ async function checkMealTriggers(sessionId) {
     askedLunch = true;
     const windowData = filterDataByTime(simulated_data, previousTime, now);
     const resp = await chain.call({
-      user_report:    userReportText,
+      user_report:    simulated_data. userReportTexttText,
       simulated_data: formatSimulatedData(windowData),
       input:          'Ask the user What did you have for lunch?',
       history:        getBySessionId(sessionId).messages
@@ -120,7 +113,7 @@ async function checkMealTriggers(sessionId) {
     askedDinner = true;
     const windowData = filterDataByTime(simulated_data, previousTime, now);
     const resp = await chain.call({
-      user_report:    userReportText,
+      user_report:    simulated_data. userReportTexttText,
       simulated_data: formatSimulatedData(windowData),
       input:          'Ask the user What did you have for dinner?',
       history:        getBySessionId(sessionId).messages
@@ -138,7 +131,7 @@ async function checkSpikeTriggers(sessionId) {
 
   // ask the LLM to call out any spikes
   const resp = await chain.call({
-    user_report:    userReportText,
+    user_report:    simulated_data. userReportTexttText,
     simulated_data: formatSimulatedData(windowData),
     input:          'Please analyze any spikes in heart rate or blood pressure in the above recent data.',
     history:        getBySessionId(sessionId).messages
@@ -203,7 +196,7 @@ async function runChatbot() {
 
     // 3) call LLM with only the sliced simulated data
     const vars = {
-      user_report:    userReportText,
+      user_report:    simulated_data. userReportTexttText,
       simulated_data: formatSimulatedData(windowData),
       input:          userInput,
       history:        getBySessionId(sessionId).messages
@@ -226,7 +219,7 @@ async function runChatbot() {
   }
 }
 
-runChatbot().catch(console.error);
+// runChatbot().catch(console.error);
 
 // Export the setter so you can write e.g. setCurrentTime('08:05') in REPL/tests
 module.exports = {
@@ -237,5 +230,4 @@ module.exports = {
   getBySessionId,
   previousTime,
   persistTime,
-  userReportText
 };

@@ -139,5 +139,13 @@ module.exports = {
       { time: "21:45", bpm: 83 },
       { time: "22:00", bpm: 67 }
     ]
-  }
+  },// Example user report
+ userReportText : `
+Patient: Samantha
+Age: 45
+Diagnosis: Pre-diabetes, hypertension.
+Recent labs: Fasting glucose 98 mg/dL, HbA1c 6.0%.
+Medications: Metformin 500mg daily.
+Notes: Family history of diabetes. Needs to increase physical activity.
+`
 };

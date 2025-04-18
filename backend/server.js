@@ -10,7 +10,6 @@ const {
   getBySessionId,
   previousTime: initPreviousTime,
   persistTime,
-  userReportText,
   checkSpikeTriggers
 } = require('./chatBot');
 const { getCurrentTime, timeToMinutes } = require('./timeUtils');
@@ -87,7 +86,7 @@ io.on('connection', (socket) => {
 
     // call your chain
     const res = await chain.call({
-      user_report:    userReportText,
+      user_report:    simulated_data. userReportTexttTextText,
       simulated_data: formatSimulatedData(windowData),
       input:          userInput,
       history:        getBySessionId(sessionId).messages
