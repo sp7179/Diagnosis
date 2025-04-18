@@ -54,7 +54,12 @@ export default function ChatbotPage() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
-
+  function stripMarkdown(text) {
+    return text
+      .replace(/[*_~`#>\[\]()\-!]/g, '') // Remove basic markdown symbols
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove markdown links, keep text
+      .replace(/!\[(.*?)\]\(.*?\)/g, '$1'); // Remove image markdown
+  }
   useEffect(() => {
     scrollToBottom()
   }, [messages])
@@ -89,7 +94,7 @@ export default function ChatbotPage() {
       // Handle incoming messages
       setMessages((prev) => [
         ...prev,
-        { id: Date.now().toString(), content: msg, role: "assistant" }
+        { id: Date.now().toString(), content: stripMarkdown(msg), role: "assistant" }
       ]);
     });
 
